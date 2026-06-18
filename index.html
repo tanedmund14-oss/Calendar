@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>深色系單一區塊網頁 (時鐘盤內嵌背景版)</title>
+    <title>深色系單一區塊網頁 (真實圖片背景版)</title>
     <style>
         /* 基礎全域設定 */
         body {
@@ -63,7 +63,7 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
 
-        /* ==================== 時鐘區域 (圖片移至時鐘內部) ==================== */
+        /* ==================== 時鐘區域 (純真實圖片背景) ==================== */
         .clock-container {
             width: 100%;
             display: flex;
@@ -75,28 +75,27 @@
         .clock {
             width: 180px;
             height: 180px;
-            border: 6px solid #333;
+            border: 6px solid #222;
             border-radius: 50%;
             position: relative;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            overflow: hidden; /* 確保內部背景圖不會超出圓形時鐘 */
-            background-color: white; /* 墊底底色 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            overflow: hidden; 
+            background-color: #fff;
         }
 
-        /* 將 cloud.jpg 放到時鐘圓盤內部作為背景 */
+        /* 這裡只使用真實圖片 cloud.jpg，不使用任何 CSS 漸層色混合 */
         .clock::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            /* 疊加一層微白光，讓時鐘數字跟指針更清晰 */
-            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('cloud.jpg');
+            background-image: url('cloud.jpg');
             background-size: cover;
             background-position: center;
-            opacity: 0.7; /* 在時鐘內可以稍微明顯一點 */
+            opacity: 0.8; /* 提高到 80%，讓真實雲圖非常清晰 */
             z-index: 0;
         }
 
-        /* 時鐘數字定位 */
+        /* 時鐘數字 (加上細微陰影防止被真實圖片顏色吃掉) */
         .number {
             position: absolute;
             width: 100%;
@@ -104,11 +103,11 @@
             text-align: center;
             font-size: 14px;
             font-weight: bold;
-            color: #222; /* 加深數字顏色 */
+            color: #000; 
             padding: 4px;
             box-sizing: border-box;
-            z-index: 2; /* 確保在背景圖上方 */
-            text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+            z-index: 2; 
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9), -1px -1px 2px rgba(255, 255, 255, 0.9);
         }
         .n1  { transform: rotate(30deg);  } .n1  span { display: inline-block; transform: rotate(-30deg); }
         .n2  { transform: rotate(60deg);  } .n2  span { display: inline-block; transform: rotate(-60deg); }
@@ -129,19 +128,20 @@
             bottom: 50%;
             left: 50%;
             transform-origin: bottom;
-            background: #111; /* 更加深指針顏色 */
+            background: #000; 
             border-top-left-radius: 3px;
             border-top-right-radius: 3px;
             z-index: 5;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
         }
         .hour-hand { width: 5px; height: 45px; margin-left: -2.5px; }
         .min-hand { width: 3px; height: 60px; margin-left: -1.5px; }
-        .sec-hand { width: 2px; height: 72px; margin-left: -1px; background: #ff1e1e; z-index: 6; }
+        .sec-hand { width: 2px; height: 72px; margin-left: -1px; background: #ff0000; z-index: 6; }
         
         .center-dot {
             width: 10px;
             height: 10px;
-            background: #111;
+            background: #000;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -165,39 +165,43 @@
             margin: 5px 0;
         }
 
-        /* ==================== 網格月曆區域與風景背景 ==================== */
+        /* ==================== 網格月曆區域 (純真實圖片背景) ==================== */
         .calendar-container {
             position: relative;
             width: 100%;
             padding: 15px;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             box-sizing: border-box;
+            background-color: #fff;
         }
 
+        /* 這裡只使用真實圖片 beauty.jpg，移除所有 CSS 混色 */
         .calendar-container::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(254, 245, 209, 0.4), rgba(254, 245, 209, 0.4)), url('beauty.jpg');
+            background-image: url('beauty.jpg');
             background-size: cover;
             background-position: center;
-            opacity: 0.45;
+            opacity: 0.6; /* 調整為 60% 顯現真實風景 */
             z-index: 1;
         }
 
+        /* 月曆標題 */
         .calendar-header {
             text-align: center;
             font-size: 18px;
             font-weight: bold;
-            color: #5c2b00;
+            color: #331a00; 
             margin-bottom: 10px;
             position: relative;
             z-index: 2;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            text-shadow: 1px 1px 3px rgba(255, 255, 255, 1), -1px -1px 3px rgba(255, 255, 255, 1);
         }
 
+        /* 月曆網格 */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -207,27 +211,31 @@
             text-align: center;
         }
 
+        /* 日期數字文字 (加上全方位白色發光文字底，確保在真實風景圖上完全清晰) */
         .calendar-grid div {
             font-size: 13px;
             font-weight: bold;
             padding: 4px 0;
-            color: #222;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+            color: #111;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 1), -1px -1px 2px rgba(255, 255, 255, 1), 1px -1px 2px rgba(255, 255, 255, 1), -1px 1px 2px rgba(255, 255, 255, 1);
         }
 
+        /* 星期標頭樣式 */
         .calendar-grid .day-name {
-            color: #703500;
-            border-bottom: 1px solid rgba(138, 66, 0, 0.4);
+            color: #592400;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
             margin-bottom: 4px;
         }
         
+        /* 週末顏色 */
         .calendar-grid .day-name:nth-child(7n),
         .calendar-grid .day-name:nth-child(7n-6) {
-            color: #c9302c;
+            color: #d9381e; 
         }
 
+        /* 今天的日期高亮顯示 */
         .calendar-grid .today {
-            background-color: #703500;
+            background-color: #4a2300;
             color: #fff !important;
             border-radius: 50%;
             width: 24px;
@@ -235,8 +243,8 @@
             line-height: 24px;
             margin: 0 auto;
             padding: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            text-shadow: none !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            text-shadow: none !important; /* 拔除高亮日期的文字陰影 */
         }
 
         @media (max-width: 768px) {
@@ -297,6 +305,7 @@
     </div>
 
     <script>
+        // 保留先前所有的隨機名言與時間、網格月曆動態生成邏輯
         const quotes = [
             "生命不求活得長，但求活得精彩。", "千里之行，始於足下。", "成功的秘訣，在於永不改變既定的目的。", 
             "每一天都是一個新的開始，深呼吸，重新出發。", "不要等待機會，而要創造機會。", "不論你在什麼時候開始，重要的是開始之後就不要停止。",
@@ -325,7 +334,7 @@
             "如果你不開口問，答案永遠是『不』。", "如果你不往前走，你就永遠停在原地。", "生活不會虧待每一個努力生活的人。",
             "擁有夢想只是一種智商，實現夢想才是一種能力。", "當你停止嘗試，你才真正宣告失敗。", "在頂峰相見之前，每個人都要獨自走過那段黑暗的路。",
             "最糟糕的不是失敗，而是你從未嘗試。", "保持熱愛，奔赴山海。", "心中有岸，便無所畏懼。",
-            "自律帶來的自由，比放縱更令人著迷。", "沒必要跟每個人解釋你自己，因為懂你的人不需要。", "所有的好運，都是努力的伏筆。",
+            "自律帶來的自由，比放縱更令人著迷。", "沒必要跟每個人解释你自己，因為懂你的人不需要。", "所有的好運，都是努力的伏筆。",
             "慢一點沒關係，只要你還在往前走。", "生活給予我們痛楚，是為了讓我們更溫柔地對待世界。", "別人在奔跑，你也不能只是散步。",
             "最暗的夜，才能看見最亮的星。", "既然無處可逃，不如喜悅；既然沒有淨土，不如靜心。", "不完美的我們，正是因為不完美才顯得獨特。",
             "越努力，越幸運。", "每一份堅持，都會在未來的某一天開花結果。", "去做你害怕的事，恐懼自然就會消失。",
