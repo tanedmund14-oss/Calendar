@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深色系單一區塊網頁 (時鐘盤內嵌背景版)</title>
+    <style>
+        /* 基礎全域設定 */
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #2c3e50; /* 外層灰色背景 */
+        }
+
+        /* 主卡片容器 */
+        .combined-card {
+            display: flex;
+            width: 90%;
+            max-width: 950px;
+            height: 580px;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 左側：佳句區塊 (深棕色) */
+        .card-left {
+            flex: 1;
+            background-color: #4a3728;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        /* 右側：時鐘與網格月曆區塊 (淺黃色) */
+        .card-right {
+            flex: 1;
+            background-color: #fef5d1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 30px;
+            box-sizing: border-box;
+        }
+
+        /* 佳句文字樣式 */
+        #quote {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f5f5f5;
+            text-align: center;
+            max-width: 90%;
+            line-height: 1.8;
+            transition: opacity 0.5s ease-in-out;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* ==================== 時鐘區域 (圖片移至時鐘內部) ==================== */
+        .clock-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .clock {
+            width: 180px;
+            height: 180px;
+            border: 6px solid #333;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden; /* 確保內部背景圖不會超出圓形時鐘 */
+            background-color: white; /* 墊底底色 */
+        }
+
+        /* 將 cloud.jpg 放到時鐘圓盤內部作為背景 */
+        .clock::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            /* 疊加一層微白光，讓時鐘數字跟指針更清晰 */
+            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('cloud.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.7; /* 在時鐘內可以稍微明顯一點 */
+            z-index: 0;
+        }
+
+        /* 時鐘數字定位 */
+        .number {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #222; /* 加深數字顏色 */
+            padding: 4px;
+            box-sizing: border-box;
+            z-index: 2; /* 確保在背景圖上方 */
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+        }
+        .n1  { transform: rotate(30deg);  } .n1  span { display: inline-block; transform: rotate(-30deg); }
+        .n2  { transform: rotate(60deg);  } .n2  span { display: inline-block; transform: rotate(-60deg); }
+        .n3  { transform: rotate(90deg);  } .n3  span { display: inline-block; transform: rotate(-90deg); }
+        .n4  { transform: rotate(120deg); } .n4  span { display: inline-block; transform: rotate(-120deg); }
+        .n5  { transform: rotate(150deg); } .n5  span { display: inline-block; transform: rotate(-150deg); }
+        .n6  { transform: rotate(180deg); } .n6  span { display: inline-block; transform: rotate(-180deg); }
+        .n7  { transform: rotate(210deg); } .n7  span { display: inline-block; transform: rotate(-210deg); }
+        .n8  { transform: rotate(240deg); } .n8  span { display: inline-block; transform: rotate(-240deg); }
+        .n9  { transform: rotate(270deg); } .n9  span { display: inline-block; transform: rotate(-270deg); }
+        .n10 { transform: rotate(300deg); } .n10 span { display: inline-block; transform: rotate(-300deg); }
+        .n11 { transform: rotate(330deg); } .n11 span { display: inline-block; transform: rotate(-330deg); }
+        .n12 { transform: rotate(0deg);   } .n12 span { display: inline-block; transform: rotate(0deg); }
+
+        /* 指針樣式 */
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background: #111; /* 更加深指針顏色 */
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            z-index: 5;
+        }
+        .hour-hand { width: 5px; height: 45px; margin-left: -2.5px; }
+        .min-hand { width: 3px; height: 60px; margin-left: -1.5px; }
+        .sec-hand { width: 2px; height: 72px; margin-left: -1px; background: #ff1e1e; z-index: 6; }
+        
+        .center-dot {
+            width: 10px;
+            height: 10px;
+            background: #111;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            z-index: 7;
+        }
+
+        /* 數位時間樣式 */
+        #digital-time {
+            font-size: 20px;
+            font-weight: bold;
+            color: #222;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 16px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
+            z-index: 2;
+            margin: 5px 0;
+        }
+
+        /* ==================== 網格月曆區域與風景背景 ==================== */
+        .calendar-container {
+            position: relative;
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .calendar-container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(254, 245, 209, 0.4), rgba(254, 245, 209, 0.4)), url('beauty.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.45;
+            z-index: 1;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #5c2b00;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .calendar-grid div {
+            font-size: 13px;
+            font-weight: bold;
+            padding: 4px 0;
+            color: #222;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+        }
+
+        .calendar-grid .day-name {
+            color: #703500;
+            border-bottom: 1px solid rgba(138, 66, 0, 0.4);
+            margin-bottom: 4px;
+        }
+        
+        .calendar-grid .day-name:nth-child(7n),
+        .calendar-grid .day-name:nth-child(7n-6) {
+            color: #c9302c;
+        }
+
+        .calendar-grid .today {
+            background-color: #703500;
+            color: #fff !important;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            margin: 0 auto;
+            padding: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            text-shadow: none !important;
+        }
+
+        @media (max-width: 768px) {
+            body { height: auto; padding: 20px; }
+            .combined-card { flex-direction: column; height: auto; }
+            .card-left, .card-right { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="combined-card">
+        <div class="card-left">
+            <div id="quote">載入佳句中...</div>
+        </div>
+
+        <div class="card-right">
+            
+            <div class="clock-container">
+                <div class="clock">
+                    <div class="number n1"><span>1</span></div>
+                    <div class="number n2"><span>2</span></div>
+                    <div class="number n3"><span>3</span></div>
+                    <div class="number n4"><span>4</span></div>
+                    <div class="number n5"><span>5</span></div>
+                    <div class="number n6"><span>6</span></div>
+                    <div class="number n7"><span>7</span></div>
+                    <div class="number n8"><span>8</span></div>
+                    <div class="number n9"><span>9</span></div>
+                    <div class="number n10"><span>10</span></div>
+                    <div class="number n11"><span>11</span></div>
+                    <div class="number n12"><span>12</span></div>
+
+                    <div id="hour" class="hand hour-hand"></div>
+                    <div id="minute" class="hand min-hand"></div>
+                    <div id="second" class="hand sec-hand"></div>
+                    <div class="center-dot"></div>
+                </div>
+            </div>
+
+            <div id="digital-time">00:00:00</div>
+
+            <div class="calendar-container">
+                <div id="calendar-title" class="calendar-header">民國 000 年 / 西元 0000 年 00 月</div>
+                <div class="calendar-grid">
+                    <div class="day-name">日</div>
+                    <div class="day-name">一</div>
+                    <div class="day-name">二</div>
+                    <div class="day-name">三</div>
+                    <div class="day-name">四</div>
+                    <div class="day-name">五</div>
+                    <div class="day-name">六</div>
+                    <div id="calendar-days" style="display: contents;"></div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        const quotes = [
+            "生命不求活得長，但求活得精彩。", "千里之行，始於足下。", "成功的秘訣，在於永不改變既定的目的。", 
+            "每一天都是一個新的開始，深呼吸，重新出發。", "不要等待機會，而要創造機會。", "不論你在什麼時候開始，重要的是開始之後就不要停止。",
+            "不論你在什麼時候結束，重要的是結束之後就不要悔恨。", "有希望的地方，痛苦也成歡樂。", "投下所有的心力，你就能創造奇蹟。",
+            "過去不等於未來，沒有失敗，只有暫時停止成功。", "路是自己走出來的，命運由自己掌握。", "積極的人在每一次憂患中都看到一個機會。",
+            "消極的人在每個機會中都看到某種憂患。", "偉大的人並非不曾跌倒，而是跌倒了能再站起來。", "世上沒有絕望的處境，只有對處境絕望的人。",
+            "挑戰能讓生活充滿樂趣，克服挑戰能讓生命更有意義。", "你可以選擇回到安全的港灣，也可以選擇駛向未知的海洋。", "夢想不拋棄苦心追求的人。",
+            "邊走邊欣賞風景，讓心靈放假。", "行動是治癒恐懼的良藥，而猶豫、拖延將不斷滋養恐懼。", "當你真心渴望某樣東西時，整個宇宙都可以聯合起來幫助你。",
+            "幸福不是目的地，而一種旅行的方式。", "跌倒了，就當作是躺下休息，爬起來再繼續前進。", "別為模糊不清的未來擔憂，只為清清楚楚的現在努力。",
+            "最困難的時期，往往也是我們成長最快的時候。", "成功的路途並不擁擠，因為堅持下來的人並不多。", "把你的臉迎向陽光，也就不會有陰影。",
+            "與其抱怨玫瑰有刺，不如慶幸刺上有玫瑰。", "昨天的淚水，是洗刷今天視野的甘露。", "智者創造機會，強者把握機會，弱者等待機會。",
+            "人生的價值，並不是用時間而是用深度去衡量的。", "勇氣並非沒有恐懼，而是看破恐懼，依然前行。", "只要路是對的，就不怕路遠。",
+            "每一個你討厭的現在，都有一個不夠努力的過去。", "做最好的自己，就是對生命最好的交代。", "時間對每個人都是公平的，看你如何去賦予它價值。",
+            "不要讓別人的意見淹沒了你內心的聲音。", "當你放手時，你才真正擁有無限的可能。", "熱愛你所做的事，做你所熱愛的事。",
+            "生活就像一面鏡子，你對它笑，它就對你笑。", "最偉大的榮耀不是永不跌倒，而是每次跌倒都能爬起來。", "生命太短，沒時間留給遺憾。",
+            "開步前往目標的途中，最慢的腳步也是在前進。", "在最深的絕望裡，遇見最美麗的風景。", "寧願因嘗試而失敗，也不要因為害怕而止步不前。",
+            "智慧的代價，往往是無數次碰壁換來的。", "凡是不能擊碎你的，終將使你更強大。", "專注於當下，因為這是你唯一能掌控的時刻。",
+            "世界上最快而又最慢，最長而又最短的就是時間。", "生活不是等待暴風雨過去，而是學會在雨中跳舞。", "用寬容的心對待世界，用嚴格的心對待自己。",
+            "每一次的努力，都是在為未來的成功鋪路。", "只要心中有暖意，冬日亦能如春明媚。", "成功的起點是渴望，終點是堅持。",
+            "不要拿自己的尺，去衡量別人的人生。", "用行動證明自己，用成果回報汗水。", "心有多大，舞台就有多大。",
+            "只有經歷過地獄般的折磨，才有征服天堂的力量。", "流過淚的眼睛更明亮，滴過血的心靈更堅強。", "命運負責洗牌，但是玩牌的是我們自己。",
+            "既然目標是地平線，留給世界的只能是背影。", "今天所做的事，決定了你明天是誰。", "逆風的方向，更適合飛翔。",
+            "不要羨慕別人的光芒，你也可以閃閃發亮。", "善良是一盞燈，照亮別人，也溫暖自己。", "每一次告別，都是為了下一次更好的相遇。",
+            "你可以一一無所有，但絕不能沒有夢想。", "所謂的奇蹟，不過是努力的另一個名字。", "把平凡的事情做好，就是不平凡。",
+            "沒有人能讓你自卑，除非你同意。", "不要因走得太遠，而忘記了當初為什麼出發。", "如果你不去追，你就永遠不會擁有。",
+            "如果你不開口問，答案永遠是『不』。", "如果你不往前走，你就永遠停在原地。", "生活不會虧待每一個努力生活的人。",
+            "擁有夢想只是一種智商，實現夢想才是一種能力。", "當你停止嘗試，你才真正宣告失敗。", "在頂峰相見之前，每個人都要獨自走過那段黑暗的路。",
+            "最糟糕的不是失敗，而是你從未嘗試。", "保持熱愛，奔赴山海。", "心中有岸，便無所畏懼。",
+            "自律帶來的自由，比放縱更令人著迷。", "沒必要跟每個人解釋你自己，因為懂你的人不需要。", "所有的好運，都是努力的伏筆。",
+            "慢一點沒關係，只要你還在往前走。", "生活給予我們痛楚，是為了讓我們更溫柔地對待世界。", "別人在奔跑，你也不能只是散步。",
+            "最暗的夜，才能看見最亮的星。", "既然無處可逃，不如喜悅；既然沒有淨土，不如靜心。", "不完美的我們，正是因為不完美才顯得獨特。",
+            "越努力，越幸運。", "每一份堅持，都會在未來的某一天開花結果。", "去做你害怕的事，恐懼自然就會消失。",
+            "用微笑告訴別人，今天的你比昨天更堅強。", "不要期待事情變簡單，而是期待自己變得更強大。", "別人的眼光不重要，你如何看自己才決定一切。",
+            "每一個微小的努力，匯聚起來就是改變世界的力量。", "心存感激，所見皆是風景。", "願你歷經千帆，歸來仍是少年。",
+            "歲月不居，天道酬勤，未來永遠屬於奮鬥者。"
+        ];
+
+        let currentDayCache = -1;
+
+        function changeQuote() {
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            const quoteElement = document.getElementById('quote');
+            
+            quoteElement.style.opacity = 0;
+            setTimeout(() => {
+                quoteElement.innerText = `“ ${randomQuote} ”`;
+                quoteElement.style.opacity = 1;
+            }, 500);
+        }
+
+        function renderGridCalendar(now) {
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const todayDate = now.getDate();
+
+            if (todayDate === currentDayCache) return;
+            currentDayCache = todayDate;
+
+            const rocYear = year - 1911;
+            document.getElementById('calendar-title').innerText = `民國 ${rocYear} 年 / 西元 ${year} 年 ${month + 1} 月`;
+
+            const daysContainer = document.getElementById('calendar-days');
+            daysContainer.innerHTML = '';
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                daysContainer.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= totalDays; day++) {
+                const dayCell = document.createElement('div');
+                if (day === todayDate) {
+                    dayCell.innerHTML = `<div class="today">${day}</div>`;
+                } else {
+                    dayCell.innerText = day;
+                }
+                daysContainer.appendChild(dayCell);
+            }
+        }
+
+        function updateClockAndCalendar() {
+            const now = new Date();
+
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes();
+            const hours = now.getHours();
+            const displayHours = String(hours).padStart(2, '0');
+            const displayMinutes = String(minutes).padStart(2, '0');
+            const displaySeconds = String(seconds).padStart(2, '0');
+            document.getElementById('digital-time').innerText = `${displayHours}:${displayMinutes}:${displaySeconds}`;
+
+            const secDegrees = (seconds / 60) * 360;
+            const minDegrees = ((minutes / 60) * 360) + ((seconds / 60) * 6);
+            const hourDegrees = ((hours % 12) / 12 * 360) + ((minutes / 60) * 30);
+
+            document.getElementById('second').style.transform = `rotate(${secDegrees}deg)`;
+            document.getElementById('minute').style.transform = `rotate(${minDegrees}deg)`;
+            document.getElementById('hour').style.transform = `rotate(${hourDegrees}deg)`;
+
+            renderGridCalendar(now);
+        }
+
+        changeQuote();
+        updateClockAndCalendar();
+        setInterval(updateClockAndCalendar, 1000);
+        setInterval(changeQuote, 60000);
+    </script>
+</body>
+</html>
